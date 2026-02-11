@@ -478,20 +478,26 @@ Item {
                                 }
 
                                 // Status Badge
-                                Rectangle {
+                                Item {
                                     Layout.preferredWidth: 100
-                                    width: statusText.width + 16
-                                    height: 20
-                                    radius: 10
-                                    color: Qt.lighter(getStatusColor(modelData.status), 1.7)
+                                    Layout.fillHeight: true
 
-                                    Text {
-                                        id: statusText
-                                        anchors.centerIn: parent
-                                        text: modelData.status
-                                        font.family: "Codec Pro"
-                                        font.pixelSize: 9
-                                        color: getStatusColor(modelData.status)
+                                    Rectangle {
+                                        width: statusText.width + 16
+                                        height: 20
+                                        radius: 10
+                                        color: Qt.lighter(getStatusColor(modelData.status), 1.7)
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Text {
+                                            id: statusText
+                                            anchors.centerIn: parent
+                                            text: modelData.status
+                                            font.family: "Codec Pro"
+                                            font.pixelSize: 9
+                                            color: getStatusColor(modelData.status)
+                                        }
                                     }
                                 }
 
@@ -500,6 +506,8 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.alignment: Qt.AlignRight
                                     spacing: 8
+
+                                    Item { Layout.fillWidth: true }
 
                                     // Edit Button
                                     Rectangle {
@@ -1039,8 +1047,16 @@ Item {
             }
         }
 
-        contentItem: ColumnLayout {
-            spacing: 12
+        contentItem: ScrollView {
+            id: editInstrumentScrollView
+            clip: true
+            contentWidth: -1
+            implicitHeight: Math.min(editDialogCol.implicitHeight, 550)
+
+            ColumnLayout {
+                id: editDialogCol
+                width: editInstrumentScrollView.availableWidth
+                spacing: 12
 
             Item { height: 4 }
 
@@ -1241,6 +1257,7 @@ Item {
             }
 
             Item { height: 8 }
+        }
         }
 
         footer: Rectangle {

@@ -895,8 +895,16 @@ Item {
             }
         }
 
-        contentItem: ColumnLayout {
-            spacing: 14
+        contentItem: ScrollView {
+            id: editScrollView
+            clip: true
+            contentWidth: -1
+            implicitHeight: Math.min(editDialogCol.implicitHeight, 500)
+
+            ColumnLayout {
+                id: editDialogCol
+                width: editScrollView.availableWidth
+                spacing: 14
 
             Item { height: 4 }
 
@@ -1093,6 +1101,7 @@ Item {
             }
 
             Item { height: 4 }
+        }
         }
 
         footer: Rectangle {
