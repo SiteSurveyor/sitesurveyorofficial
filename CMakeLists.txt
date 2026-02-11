@@ -10,12 +10,35 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Sql Positioning Location Network)
 
 # Find SQLite3 and SpatiaLite
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SQLITE3 REQUIRED sqlite3)
-pkg_check_modules(SPATIALITE spatialite)
-pkg_check_modules(GDAL REQUIRED gdal)
-pkg_check_modules(PROJ REQUIRED proj)
-pkg_check_modules(GEOS REQUIRED geos)
+if(WIN32)
+    # On Windows (vcpkg), use find_package which is better supported
+    find_package(GDAL REQUIRED)
+    find_package(PROJ REQUIRED)
+    find_package(GEOS REQUIRED)
+    find_package(SQLite3 REQUIRED)
+    
+    # Map targets to variables used later
+    # Note: Modern CMake propagates includes via targets, so _INCLUDE_DIRS can be empty
+    set(GDAL_LIBRARIES GDAL::GDAL)
+    set(PROJ_LIBRARIES PROJ::proj)
+    set(GEOS_LIBRARIES GEOS::geos_c)
+    set(SQLITE3_LIBRARIES SQLite::SQLite3)
+    
+    # Spatialite is optional
+    find_package(unofficial-spatialite CONFIG) 
+    if(unofficial-spatialite_FOUND OR TARGET unofficial::spatialite::spatialite)
+        set(SPATIALITE_LIBRARIES unofficial::spatialite::spatialite)
+        set(SPATIALITE_FOUND TRUE)
+    endif()
+else()
+    # On Linux, PkgConfig is standard
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SQLITE3 REQUIRED sqlite3)
+    pkg_check_modules(SPATIALITE spatialite)
+    pkg_check_modules(GDAL REQUIRED gdal)
+    pkg_check_modules(PROJ REQUIRED proj)
+    pkg_check_modules(GEOS REQUIRED geos)
+endif()
 
 qt_add_executable(SiteSurveyor
     src/main.cpp
